@@ -1,0 +1,10 @@
+[requires]
+antlr4-cppruntime/4.13.0
+cppclick/1.0.0
+
+[generators]
+CMakeDeps
+CMakeToolchain
+
+[layout]
+cmake_layout
