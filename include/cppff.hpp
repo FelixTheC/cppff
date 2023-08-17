@@ -81,10 +81,7 @@ namespace cppff
         }
         catch (std::invalid_argument &err)
         {
-            std::stringstream sstream;
-            sstream << err.what() << "\n For file: `" << filename << "`";
-            
-            throw isort::InvalidFormat(sstream.str());
+            std::cout << err.what() << "\n For file: `" << filename << "`";
         }
 
         write_to_file(std::move(isort_.lines), filename);

@@ -48,6 +48,7 @@ if ("$ENV{TESTING}")
             gtest_main
             cppclick::cppclick
             antlr4_static
+            -pthread
     )
 
     include(GoogleTest)
@@ -80,6 +81,7 @@ else ()
             ${cppclick_LIB_DIRS_RELEASE}/libcppclick.so
             ${antlr4-cppruntime_LIB_DIRS_RELEASE}/libantlr4-runtime.a
             antlr4_static
+            -pthread
     )
 endif ()
 
