@@ -27,6 +27,28 @@ bool is_standard_lib(const std::string &val)
     return false;
 }
 
+struct customLess
+{
+    bool operator()(const std::string &a, const std::string &b) const
+    {
+        if (a.find('/') != std::string::npos)
+        {
+            if (b.find(a.substr(0, a.find('/') - 1)) != std::string::npos)
+            {
+                return false;
+            }
+        }
+        if (b.find('/') != std::string::npos)
+        {
+            if (a.find(b.substr(0, b.find('/') - 1)) != std::string::npos)
+            {
+                return true;
+            }
+        }
+        return a < b;
+    }
+};
+
 namespace isort
 {
     class InvalidFormat : public std::exception
@@ -61,7 +83,6 @@ namespace isort
                 auto current_line = val->getLine();
                 auto current_elements = this->lines.size();
                 auto current_text = val->getText();
-                volatile auto tmp = val->getType();
                 
                 if (current_line > 1 && current_line - previous_element_line > 1)
                 {
@@ -94,6 +115,8 @@ namespace isort
         
         void sort(bool check_only = false)
         {
+            if (this->start == UINT_MAX) { return; }
+            
             std::vector<std::string> std_includes {};
             std::vector<std::string> user_includes {};
             std::vector<std::string> user_libraries {};
@@ -122,7 +145,7 @@ namespace isort
                           });
             
             // let's sort the different include types/sections separately
-            std::sort(std_includes.begin(), std_includes.end(), std::less<std::string>());
+            std::sort(std_includes.begin(), std_includes.end(), customLess());
             std::sort(user_includes.begin(), user_includes.end(), std::less<std::string>());
             std::sort(user_libraries.begin(), user_libraries.end(), std::less<std::string>());
             
