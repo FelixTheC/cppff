@@ -42,6 +42,7 @@ if ("$ENV{TESTING}")
             include/std_headers.hpp
             include/isort.hpp
             include/cppff.hpp
+            src/isort.cpp
     )
 
     target_link_libraries(${PROJECT_NAME}
@@ -74,6 +75,7 @@ else ()
             include/std_headers.hpp
             include/isort.hpp
             include/cppff.hpp
+            src/isort.cpp
     )
 
     target_link_libraries(

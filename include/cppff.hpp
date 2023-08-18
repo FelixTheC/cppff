@@ -22,24 +22,6 @@ using namespace antlr4;
 
 namespace cppff
 {
-    const std::vector<std::string> allowed_file_domains = {".h", ".hpp", ".c", ".cpp"};
-    
-    bool is_cpp_file(const std::string &file)
-    {
-        auto it = std::find(file.cbegin(), file.cend(), '.');
-        if (it != std::end(file))
-        {
-            auto domain = file.substr(std::distance(file.begin(), it));
-            return std::any_of(allowed_file_domains.begin(),
-                               allowed_file_domains.end(),
-                               [&domain](const auto &val){ return domain == val; });
-        }
-        else
-        {
-            return false;
-        }
-    }
-    
     void write_to_file(std::vector<std::string> &&lines, const std::string &file_name)
     {
         std::ofstream outFile;
@@ -59,9 +41,9 @@ namespace cppff
         outFile.close();
     }
     
-    void isort(const std::string &filename, bool check = false)
+    void isort(const std::string &filename, bool check = false) noexcept
     {
-        isort::Isort isort_{};
+        isort::Isort isort_ { filename };
         std::ifstream stream;
         stream.open(filename);
         
@@ -73,6 +55,11 @@ namespace cppff
             CPP14Lexer cpp14Lexer(&antlrInputStream);
             isort_.parse_from_tokens(cpp14Lexer.getAllTokens());
         }
+        else
+        {
+            return;
+        }
+        
         stream.close();
         
         try
@@ -87,9 +74,9 @@ namespace cppff
         write_to_file(std::move(isort_.lines), filename);
     }
     
-    void isort_run(const std::string &path, bool check = false)
+    void isort_run(const std::string &path, bool check = false) noexcept
     {
-        if (fs::is_regular_file(path) && is_cpp_file(path))
+        if (fs::is_regular_file(path) && isort::utils::is_cpp_file(path))
         {
             isort(path, check);
         }

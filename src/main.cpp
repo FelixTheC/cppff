@@ -31,7 +31,9 @@ void create_commandline_args(click::Click &cppClick)
     click::Argument fileArg {"file_path",
                              [](const std::string &val) -> std::string
                              {
-                                 bool validFile = (fs::is_regular_file(val) && cppff::is_cpp_file(val)) || fs::is_directory(val);
+                                 bool validFile = (fs::is_regular_file(val) &&
+                                                   isort::utils::is_cpp_file(val)) ||
+                                                   fs::is_directory(val);
                                  if (validFile)
                                  {
                                      return val;
