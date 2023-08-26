@@ -34,6 +34,7 @@ const std::vector<std::string> STD_HEADERS = {
         "deque",
         "exception",
         "fstream",
+        "filesystem",
         "functional",
         "iomanip",
         "ios",
