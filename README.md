@@ -31,7 +31,7 @@ or maybe you did it because you added it when the dependency pop-up.
 ```
 after running `./cppff <file_path> --isort` the includes will be ordered in the following way
 - at first all standard library headers
-- all libraries from dependencies
+- all libraries from dependencies or from the same level
 - all other files
 separated by space
 ```c++
