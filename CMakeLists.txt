@@ -4,6 +4,9 @@ project(cppff VERSION 1.0 LANGUAGES CXX)
 set(antlr4-runtime_DIR ${antlr4-cppruntime_LIB_DIRS_RELEASE})
 set(cppclick_DIR ${cppruntime_LIB_DIRS_RELEASE})
 set(clang_compiler "/usr/bin/clang-cpp-16")
+set(source_files
+        cpp_parsing/CPP14Lexer.cpp
+        src/isort.cpp)
 
 find_package(antlr4-runtime CONFIG REQUIRED)
 find_package(cppclick CONFIG REQUIRED)
@@ -25,12 +28,12 @@ if ("$ENV{TESTING}")
 
     add_executable(
             ${PROJECT_NAME}
-            cpp_parsing/CPP14Lexer.cpp
-            include/std_headers.hpp
-            include/cppff.hpp
-            include/isort.hpp
-            src/isort.cpp
-            src/main.cpp
+            tests/testmain.cpp
+            tests/test_cppff.cpp
+            tests/test_isort.cpp
+            tests/test_isort_utils.cpp
+            tests/helpers.hpp
+            ${source_files}
     )
 
     target_link_libraries(
@@ -56,8 +59,7 @@ else ()
     add_executable(
             ${PROJECT_NAME}
             src/main.cpp
-            cpp_parsing/CPP14Lexer.cpp
-            src/isort.cpp
+            ${source_files}
     )
 
     target_link_libraries(

@@ -11,9 +11,13 @@ namespace isort
         {
             for (const auto &header: STD_HEADERS)
             {
-                if (val.find(header) != std::string::npos)
+                auto found_pos = val.find(header);
+                if (found_pos != std::string::npos)
                 {
-                    return true;
+                    auto prev_chr = val[found_pos - 1];
+                    auto next_chr = val[found_pos + header.size()];
+                    // we need to check if the name is not mixed up from the user
+                    return prev_chr == '<' && (next_chr == '>' || next_chr == '/');
                 }
             }
             return false;
@@ -48,10 +52,15 @@ namespace isort
         std::vector<std::string> files_from_same_level(const std::string &val)
         {
             auto path = fs::path(val);
-            auto parent_dir = path.parent_path();
+            auto parent_dir = path;
             std::vector<std::string> filenames_in_dir {};
-            filenames_in_dir.reserve(std::distance(parent_dir.begin(), parent_dir.end()));
             
+            if (!fs::is_directory(path))
+            {
+                parent_dir = path.parent_path();
+            }
+            
+            filenames_in_dir.reserve(std::distance(parent_dir.begin(), parent_dir.end()));
             for (const auto &child_path: fs::directory_iterator(parent_dir))
             {
                 if (is_cpp_file(child_path.path()))
@@ -60,6 +69,7 @@ namespace isort
                 }
             }
             
+            filenames_in_dir.shrink_to_fit();
             return filenames_in_dir;
         }
         
@@ -93,7 +103,7 @@ namespace isort
         {
             auto current_line = val->getLine();
             auto current_elements = this->lines.size();
-            auto current_text = val->getText();
+            std::string current_text = val->getText();;
             
             if (current_line > 1 && current_line - previous_element_line > 1)
             {

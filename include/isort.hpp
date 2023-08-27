@@ -16,6 +16,7 @@
 #include "std_headers.hpp"
 
 
+namespace fs = std::filesystem;
 using namespace antlr4;
 
 namespace isort
@@ -45,8 +46,11 @@ namespace isort
         
         explicit Isort(const std::string &file_path)
         {
-            auto files = utils::files_from_same_level(file_path);
-            same_level_files = std::move(files);
+            if (fs::is_regular_file(file_path))
+            {
+                auto files = utils::files_from_same_level(file_path);
+                same_level_files = std::move(files);
+            }
         };
         ~Isort() = default;
         

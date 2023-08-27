@@ -23,7 +23,7 @@ using namespace antlr4;
 
 namespace cppff
 {
-    void write_to_file(std::vector<std::string> &&lines, const std::string &file_name)
+    static void write_to_file(std::vector<std::string> &&lines, const std::string &file_name)
     {
         std::ofstream outFile;
         outFile.open(file_name, std::ios_base::trunc);
@@ -42,40 +42,48 @@ namespace cppff
         outFile.close();
     }
     
-    void isort(const std::string &filename, bool check = false) noexcept
+    [[ nodiscard ]] static bool get_lexer_tokens(isort::Isort &isort_, const std::string &filename)
     {
-        isort::Isort isort_ { filename };
         std::ifstream stream;
         stream.open(filename);
-        
-        std::vector<std::unique_ptr<Token>> tokens;
         
         if(stream.is_open())
         {
             ANTLRInputStream antlrInputStream = ANTLRInputStream(stream);
             CPP14Lexer cpp14Lexer(&antlrInputStream);
+            
             isort_.parse_from_tokens(cpp14Lexer.getAllTokens());
         }
         else
         {
-            return;
+            return false;
         }
         
         stream.close();
-        
-        try
-        {
-            isort_.sort(check);
-        }
-        catch (std::invalid_argument &err)
-        {
-            std::cout << err.what() << "\n For file: `" << filename << "`";
-        }
-
-        write_to_file(std::move(isort_.lines), filename);
+        return true;
     }
     
-    void isort_run(const std::string &path, bool check = false) noexcept
+    static void isort(const std::string &filename, bool check = false) noexcept
+    {
+        isort::Isort isort_ { filename };
+        auto lexer_tokens = get_lexer_tokens(isort_, filename);
+        
+        if (lexer_tokens)
+        {
+            try
+            {
+                isort_.sort(check);
+            }
+            catch (std::invalid_argument &err)
+            {
+                std::cout << err.what() << "\n For file: `" << filename << "`";
+            }
+            
+            write_to_file(std::move(isort_.lines), filename);
+        }
+    }
+    
+    static void isort_run(const std::string &path, bool check = false) noexcept
     {
         if (fs::is_regular_file(path) && isort::utils::is_cpp_file(path))
         {
