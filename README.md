@@ -1,6 +1,11 @@
 # cppff
-C++ file formatting inspired by the python isort package
+C++ file formatting inspired by some packages for Python
 
+## Installation
+### Requirements
+- [conan > 2.0](https://docs.conan.io/2/tutorial.html) to install the required libraries to run this project.
+- CMake >= 3.24
+- a compiler with support for C++ 20
 
 ## Example
 ### Calling help
