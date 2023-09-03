@@ -25,13 +25,22 @@ jobs:
       - name: install cmake
         run: sudo apt install -y cmake
 
+      - name: checkout cpp_click
+        run: |
+          git config --global url.https://github.com/.insteadOf git://github.com/
+          git clone https://github.com/FelixTheC/cpp_click
+
+      - name: run ls
+        working-directory: ./
+        run: ls -l
+
       - name: build cmake
-        working-directory: ./src
+        working-directory: ./
         run: |
           mkdir build && cd build
           cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug ..
           make -j2
 
       - name: run test
-        working-directory: ./src/build
+        working-directory: ./
         run: ls -l
