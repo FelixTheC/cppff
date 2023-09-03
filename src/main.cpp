@@ -4,34 +4,30 @@
 #include "click.hpp"
 #include "clickArgument.hpp"
 #include "clickOption.hpp"
+
 #include "../include/cppff.hpp"
 
 namespace fs = std::filesystem;
 
 void create_commandline_args(click::Click &cppClick);
+void execute_commandline_args(int argv, char *argc[]);
 
 int main(int argv, char *argc[])
 {
-    click::Click cppClick {"isort"};
-    create_commandline_args(cppClick);
-
-    cppClick.parse_commandline_args(argv, argc);
-
-    auto path = cppClick.get_argument("file_path").value()->get_value<std::string>();
-    auto check_only = cppClick.get_option("check").value()->get_value<bool>();
-
-    cppff::isort_run(path, check_only);
-
+    execute_commandline_args(argv, argc);
     return EXIT_SUCCESS;
 }
 
 void create_commandline_args(click::Click &cppClick)
 {
-    click::Option isortOption {"check"};
+    click::Option checkOption {"check"};
+    click::Option isortOption {"isort"};
     click::Argument fileArg {"file_path",
                              [](const std::string &val) -> std::string
                              {
-                                 bool validFile = (fs::is_regular_file(val) && cppff::is_cpp_file(val)) || fs::is_directory(val);
+                                 bool validFile = (fs::is_regular_file(val) &&
+                                                   isort::utils::is_cpp_file(val)) ||
+                                                   fs::is_directory(val);
                                  if (validFile)
                                  {
                                      return val;
@@ -42,5 +38,31 @@ void create_commandline_args(click::Click &cppClick)
                                  }
                              }};
     cppClick.arguments.emplace_back(std::make_unique<click::Argument>(std::move(fileArg)));
+    cppClick.options.emplace_back(std::make_unique<click::Option>(std::move(checkOption)));
     cppClick.options.emplace_back(std::make_unique<click::Option>(std::move(isortOption)));
+}
+
+void execute_commandline_args(int argv, char *argc[])
+{
+    click::Click cppClick {"cppff"};
+    create_commandline_args(cppClick);
+    
+    cppClick.parse_commandline_args(argv, argc);
+    
+    if (cppClick.help_called)
+    {
+        cppClick.display_help_text();
+    }
+    else
+    {
+        auto path = cppClick.get_argument("file_path").value()->get_value<std::string>();
+        auto check_only = cppClick.get_option("check").value()->get_value<bool>();
+        auto run_isort = cppClick.get_option("isort").value()->get_value<bool>();
+        
+        if (run_isort)
+        {
+            std::cout << "Running isort for " << path << "\n";
+            cppff::isort_run(path, check_only);
+        }
+    }
 }
