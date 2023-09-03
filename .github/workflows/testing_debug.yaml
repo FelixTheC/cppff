@@ -32,7 +32,9 @@ jobs:
 
       - name: install cpp_click via conan
         working-directory: ./cpp_click
-        run: conan create . -s build_type=Release
+        run: |
+          conan profile detect
+          conan create . -s build_type=Release
 
 #      - name: build cmake
 #        working-directory: ./
