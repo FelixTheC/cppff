@@ -3,14 +3,13 @@ project(cppff VERSION 1.0 LANGUAGES CXX)
 
 set(antlr4-runtime_DIR ${antlr4-cppruntime_LIB_DIRS_RELEASE})
 set(cppclick_DIR ${cppruntime_LIB_DIRS_RELEASE})
+set(clang_compiler "/usr/bin/clang-cpp-16")
+set(source_files
+        cpp_parsing/CPP14Lexer.cpp
+        src/isort.cpp)
 
 find_package(antlr4-runtime CONFIG REQUIRED)
 find_package(cppclick CONFIG REQUIRED)
-
-get_cmake_property(_variableNames VARIABLES)
-foreach (_variableName ${_variableNames})
-    message("${_variableName}=${${_variableName}}")
-endforeach()
 
 if ("$ENV{TESTING}")
     enable_testing()
@@ -24,67 +23,60 @@ if ("$ENV{TESTING}")
     FetchContent_MakeAvailable(googletest)
     include_directories(
             ${GTEST_INCLUDE_DIRS}
-            ${antlr4-runtime_INCLUDE_DIR}
-            ${antlr4-cppruntime_LIB_DIRS_RELEASE}
-            ${cppclick_INCLUDE_DIR}
-            ${cppruntime_LIB_DIRS_RELEASE}
             cpp_parsing
     )
 
     add_executable(
             ${PROJECT_NAME}
-            cpp_parsing/CPP14Lexer.cpp
-            cpp_parsing/CPP14Parser.cpp
-            cpp_parsing/CPP14ParserBase.cpp
-            cpp_parsing/CPP14ParserBaseListener.cpp
-            cpp_parsing/CPP14ParserListener.cpp
-            src/main.cpp
-            include/std_headers.hpp
-            include/isort.hpp
-            include/cppff.hpp
-    )
-
-    target_link_libraries(${PROJECT_NAME}
-            gtest_main
-            cppclick::cppclick
-            antlr4_static
-    )
-
-    include(GoogleTest)
-    gtest_discover_tests(annadb_driver)
-
-else ()
-    include_directories(
-            ${antlr4-runtime_INCLUDE_DIR}
-            ${antlr4-cppruntime_LIB_DIRS_RELEASE}
-            ${cppclick_INCLUDE_DIR}
-            ${cppruntime_LIB_DIRS_RELEASE}
-            cpp_parsing
-    )
-
-    add_executable(
-            ${PROJECT_NAME}
-            cpp_parsing/CPP14Lexer.cpp
-            cpp_parsing/CPP14Parser.cpp
-            cpp_parsing/CPP14ParserBase.cpp
-            cpp_parsing/CPP14ParserBaseListener.cpp
-            cpp_parsing/CPP14ParserListener.cpp
-            src/main.cpp
-            include/std_headers.hpp
-            include/isort.hpp
-            include/cppff.hpp
+            tests/testmain.cpp
+            tests/test_cppff.cpp
+            tests/test_isort.cpp
+            tests/test_isort_utils.cpp
+            tests/helpers.hpp
+            ${source_files}
     )
 
     target_link_libraries(
             ${PROJECT_NAME}
-            ${cppclick_LIB_DIRS_RELEASE}/libcppclick.so
-            ${antlr4-cppruntime_LIB_DIRS_RELEASE}/libantlr4-runtime.a
             antlr4_static
+            cppclick::cppclick
+            gtest_main
+            -pthread
+    )
+
+    target_link_directories(
+            ${PROJECT_NAME}
+            PRIVATE ${antlr4-runtime_INCLUDE_DIR}
+            PRIVATE ${cppclick_INCLUDE_DIR}
+    )
+
+    include(GoogleTest)
+    gtest_discover_tests(${PROJECT_NAME})
+
+else ()
+    include_directories(${PROJECT_SOURCE_DIR} cpp_parsing)
+
+    add_executable(
+            ${PROJECT_NAME}
+            src/main.cpp
+            ${source_files}
+    )
+
+    target_link_libraries(
+            ${PROJECT_NAME}
+            antlr4_static
+            cppclick::cppclick
+            -pthread
+    )
+
+    target_link_directories(
+            ${PROJECT_NAME}
+            PRIVATE ${antlr4-runtime_INCLUDE_DIR}
+            PRIVATE ${cppclick_INCLUDE_DIR}
     )
 endif ()
 
-
-if ("$ENV{GCC}")
+if (CMAKE_CXX_COMPILER STREQUAL ${clang_compiler})
     target_compile_options(${PROJECT_NAME} PRIVATE
             -Wall
             -Wextra
@@ -98,11 +90,15 @@ if ("$ENV{GCC}")
             -fno-omit-frame-pointer
             -fsanitize=address
     )
-    target_link_options(${PROJECT_NAME} PRIVATE -fsanitize=address)
+    target_link_options(${PROJECT_NAME} PRIVATE -fsanitize=address -Qunused-arguments)
+
+else ()
+    target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
+
 endif ()
 
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
 set_target_properties(${PROJECT_NAME} PROPERTIES
         CXX_STANDARD 20
         CXX_STANDARD_REQUIRED YES
-        CXX_EXTENSIONS NO)
+        CXX_EXTENSIONS NO
+        )

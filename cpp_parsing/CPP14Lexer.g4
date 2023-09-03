@@ -28,7 +28,7 @@ UserDefinedLiteral:
 	| UserDefinedStringLiteral
 	| UserDefinedCharacterLiteral;
 
-IncludeDirective: '#include ' ('<' | '"') [a-zA-Z0-9-_./]+  ('>' | '"');
+IncludeDirective: ('#include'|'#include ')  ('<' | '"') [a-zA-Z0-9-_./]+  ('>' | '"');
 
 MultiLineMacro:
 	'#' (~[\n]*? '\\' '\r'? '\n')+ ~ [\n]+;

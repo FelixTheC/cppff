@@ -1,6 +1,6 @@
 [requires]
 antlr4-cppruntime/4.13.0
-cppclick/1.0.0
+cppclick/1.0.3
 
 [generators]
 CMakeDeps
