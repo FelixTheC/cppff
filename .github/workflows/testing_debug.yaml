@@ -49,7 +49,7 @@ jobs:
         working-directory: ./
         run: |
           mkdir build_debug_testing && cd build_debug_testing
-          cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -D CMAKE_C_COMPILER=/usr/bin/gcc -D CMAKE_CXX_COMPILER=/usr/bin/g++ ..
+          cmake -G "Unix Makefiles" -DCMAKE_TOOLCHAIN_FILE=../build/build/Debug/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -D CMAKE_C_COMPILER=/usr/bin/gcc -D CMAKE_CXX_COMPILER=/usr/bin/g++ ..
           make -j2
 
       - name: run test
