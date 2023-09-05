@@ -22,11 +22,6 @@ jobs:
           version: latest
           platform: x64
 
-      - name: test
-        run: |
-          which gcc
-          gcc -v
-
       - name: install cmake
         run: sudo apt install -y cmake
 
@@ -54,4 +49,4 @@ jobs:
 
       - name: run test
         working-directory: ./build_debug_testing
-        run: ls -l
+        run: ./cppff
