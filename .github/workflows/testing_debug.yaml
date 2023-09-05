@@ -38,7 +38,7 @@ jobs:
 
       - name: install other conan packages
         working-directory: ./
-        run: conan install . --output-folder=build -s build_type=Debug
+        run: conan install . --output-folder=build -s build_type=Debug --build=antlr4-cppruntime/4.13.0
 
       - name: build cmake
         working-directory: ./
