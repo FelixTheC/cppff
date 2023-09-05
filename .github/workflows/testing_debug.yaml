@@ -43,10 +43,10 @@ jobs:
       - name: build cmake
         working-directory: ./
         run: |
-          mkdir build && cd build
+          mkdir build_debug_testing && cd build_debug_testing
           cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -D CMAKE_C_COMPILER=gcc-13.1 -D CMAKE_CXX_COMPILER=g++-13.1 ..
           make -j2
 
       - name: run test
-        working-directory: ./build
+        working-directory: ./build_debug_testing
         run: ls -l
