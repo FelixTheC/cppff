@@ -22,6 +22,11 @@ jobs:
           version: latest
           platform: x64
 
+      - name: test
+        run: |
+          which gcc
+          gcc -v
+
       - name: install cmake
         run: sudo apt install -y cmake
 
