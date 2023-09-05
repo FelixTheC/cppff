@@ -34,15 +34,19 @@ jobs:
         working-directory: ./cpp_click
         run: |
           conan profile detect
-          conan create . -s build_type=Release
+          conan create . -s build_type=Debug
 
-#      - name: build cmake
-#        working-directory: ./
-#        run: |
-#          mkdir build && cd build
-#          cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug ..
-#          make -j2
+      - name: install other conan packages
+        working-directory: ./
+        run: conan install . --output-folder=build -s build_type=Debug
+
+      - name: build cmake
+        working-directory: ./
+        run: |
+          mkdir build && cd build
+          cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -D CMAKE_C_COMPILER=gcc-13.1 -D CMAKE_CXX_COMPILER=g++-13.1 ..
+          make -j2
 
       - name: run test
-        working-directory: ./
-        run: conan list "*"
+        working-directory: ./build
+        run: ls -l
