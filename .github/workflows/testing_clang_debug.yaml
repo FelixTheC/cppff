@@ -1,0 +1,52 @@
+name: Testing Debug Clang
+on: [push, workflow_dispatch]
+
+jobs:
+  test-app-clang-debug:
+    runs-on: ubuntu-latest
+    env:
+      TESTING: 1
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: install conan
+        run: pip install conan
+
+      - name: Set up Clang
+        uses: egor-tensin/setup-clang@v1
+        with:
+          version: latest
+          platform: x64
+
+      - name: install cmake
+        run: sudo apt install -y cmake
+
+      - name: checkout cpp_click
+        run: |
+          git config --global url.https://github.com/.insteadOf git://github.com/
+          git clone https://github.com/FelixTheC/cpp_click
+
+      - name: install cpp_click via conan
+        working-directory: ./cpp_click
+        run: |
+          conan profile detect
+          conan create . -s build_type=Debug
+
+      - name: install other conan packages
+        working-directory: ./
+        run: conan install . --output-folder=build -s build_type=Debug --build=antlr4-cppruntime/4.13.0
+
+      - name: build cmake
+        working-directory: ./
+        run: |
+          mkdir build_debug_testing && cd build_debug_testing
+          cmake -G "Unix Makefiles" -DCMAKE_TOOLCHAIN_FILE=../build/build/Debug/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -D CMAKE_C_COMPILER=/usr/bin/clang -D CMAKE_CXX_COMPILER=/usr/bin/clang++ ..
+          make -j2
+
+      - name: run test
+        working-directory: ./build_debug_testing
+        run: ./cppff
