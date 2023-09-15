@@ -53,5 +53,16 @@ separated by space
 ```
 
 ## Options
+- --check
+
 when also adding `--check` you will only get an information if the format does not match without touching the original file,
 this will be mostly used for CI-Pipelines or in a pre-commit hook
+
+- --exclude
+
+ignore multiple file paths separated by `,`
+example:
+```shell
+./cppff <file_path> --isort --exclude="path/src/abc.cpp,path/include/abc.cpp"
+```
+

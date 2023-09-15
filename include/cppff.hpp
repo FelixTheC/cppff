@@ -97,6 +97,26 @@ namespace cppff
             }
         }
     }
+    
+    static void isort_run(const std::string &path, std::vector<std::string> &&excluded_files, bool check = false) noexcept
+    {
+        if (fs::is_regular_file(path) &&
+            isort::utils::is_cpp_file(path) &&
+            std::find(excluded_files.begin(), excluded_files.end(), path) == excluded_files.end())
+        {
+            isort(path, check);
+        }
+        else if (fs::is_directory(path))
+        {
+            for (const auto &file_path: fs::directory_iterator(path))
+            {
+                if (std::find(excluded_files.begin(), excluded_files.end(),path) > excluded_files.end())
+                {
+                    isort_run(file_path.path(), check);
+                }
+            }
+        }
+    }
 }
 
 #endif //FLAKE_CPP_CPPFF_HPP
