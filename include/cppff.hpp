@@ -24,8 +24,10 @@ using namespace antlr4;
 
 namespace cppff
 {
-    
-    static void write_to_file(std::vector<std::string> &&lines, const std::string &file_name)
+    /// @brief Write data back to a specific file.
+    /// @param lines the lines which should be written to this file.
+    /// @param file_name the existing file which should be written.
+    inline void write_to_file(std::vector<std::string> &&lines, const std::string &file_name)
     {
         std::ofstream outFile;
         outFile.open(file_name, std::ios_base::trunc);
@@ -65,7 +67,10 @@ namespace cppff
         return true;
     }
     
-    static void isort(const std::string &filename, bool check = false) noexcept
+    /// @brief Sort the include paths of a specific file.
+    /// @param filename the existing file which should be modified.
+    /// @param check a flag which enables a check only approach without modification of the original file.
+    inline void isort(const std::string &filename, bool check = false) noexcept
     {
         isort::Isort isort_ { filename };
         auto lexer_tokens = get_lexer_tokens(isort_, filename);
@@ -85,7 +90,10 @@ namespace cppff
         }
     }
     
-    static void isort_run(const std::string &path, bool check = false) noexcept
+    /// @brief Helper function which calls itself recursive if the path parameter is a directory.
+    /// @param path the filename or directory path which should be modified.
+    /// @param check a flag which enables a check only approach without modification of the original file.
+    inline void isort_run(const std::string &path, bool check = false) noexcept
     {
         if (fs::is_regular_file(path) && isort::utils::is_cpp_file(path))
         {
@@ -100,7 +108,11 @@ namespace cppff
         }
     }
     
-    static void isort_run(const std::string &path, std::vector<std::string> &&excluded_files, bool check = false) noexcept
+    /// @brief Helper function which calls itself recursive if the path parameter is a directory and only for those files which are not inside the exclude_files.
+    /// @param path the filename or directory path which should be modified.
+    /// @param excluded_files a vector of filenames which should be ignored.
+    /// @param check a flag which enables a check only approach without modification of the original file.
+    inline void isort_run(const std::string &path, std::vector<std::string> &&excluded_files, bool check = false) noexcept
     {
         if (fs::is_regular_file(path) &&
             isort::utils::is_cpp_file(path) &&
@@ -145,6 +157,7 @@ namespace cppff
                                  }};
         
         excludeOption.set_default_value<std::string>(std::string {});
+        excludeOption.set_help_text("A `,` separated list of file paths. Like `/tmp/foo.hpp,/tmp/bar.cpp`");
         
         cppClick.arguments.emplace_back(std::make_unique<click::Argument>(std::move(fileArg)));
         cppClick.options.emplace_back(std::make_unique<click::Option>(std::move(checkOption)));

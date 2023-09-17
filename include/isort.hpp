@@ -25,19 +25,35 @@ namespace isort
     {
         const std::vector<std::string> allowed_file_domains = {".h", ".hpp", ".c", ".cpp"};
         
+        /// @brief Check if a string is a potential c++ standard library header.
+        /// @param val the string to check.
+        /// @return true if the string is a potential c++ standard library header.
         bool is_standard_lib(const std::string &val);
+        
+        /// @brief Check if the file is on the same level.
+        /// @param val the filename string to check.
+        /// @param files all files from the same level.
+        /// @return true if the filename is a part from a filename on the same level.
         bool is_file_from_same_level(const std::string &val, std::vector<std::string> &files);
+        
+        /// @brief Get files from the same level.
+        /// @param val the directory path.
+        /// @return A std::vector of all files from this directory.
         std::vector<std::string> files_from_same_level(const std::string &val);
         
+        /// @brief Check if the filename is a possible cpp file name.
+        /// @param file the filename to check.
+        /// @return `true` if the filename ends with any of these [".h", ".hpp", ".c", ".cpp"] otherwise `false`
         bool is_cpp_file(const std::string &file);
         
+        /// @brief Custom sorting algorithm for sorting the include paths.
         struct IsortIncludeSortLess
         {
             bool operator()(const std::string &a, const std::string &b) const;
         };
     }
     
-    struct Isort
+    struct alignas(64) Isort
     {
         uint start = UINT_MAX;
         uint stop = 0;
