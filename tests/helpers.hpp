@@ -12,6 +12,9 @@
 
 namespace fs = std::filesystem;
 
+/// @brief Create an example c++ file under /tmp/ with the current timestamp as name.
+/// @param file_domain which should be any of: [`.c`, `.cpp`, `.h`, `.hpp`]
+/// @return the complete filename with path
 [[ nodiscard ]] static std::string create_example_file(const std::string &file_domain) noexcept
 {
     auto time = std::time(nullptr);
@@ -43,6 +46,8 @@ namespace fs = std::filesystem;
     return temp_file;
 }
 
+/// @brief Create an example directory with 10 random files (.hpp, .cpp, .txt).
+/// @return the directory path.
 [[ nodiscard ]] static std::string create_example_dir() noexcept
 {
     auto test_dir = fs::temp_directory_path() += "/test";
@@ -79,6 +84,28 @@ namespace fs = std::filesystem;
     }
     
     return test_dir;
+}
+
+/// @brief Read the file content for a specific file into an std::vector.
+/// @param file the file to read the content from.
+/// @return the lines of the file as std::vector.
+inline std::vector<std::string> read_file(const std::string &file)
+{
+    std::vector<std::string> result {};
+    
+    std::ifstream ifstream;
+    ifstream.open(file);
+    
+    if (ifstream.is_open())
+    {
+        std::string partial;
+        while(getline(ifstream, partial))
+        {
+            result.emplace_back(partial);
+        }
+    }
+    
+    return result;
 }
 
 #endif //CPPFF_HELPERS_HPP
