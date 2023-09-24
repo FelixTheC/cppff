@@ -6,7 +6,8 @@ set(cppclick_DIR ${cppruntime_LIB_DIRS_RELEASE})
 set(clang_compiler "/usr/bin/clang-cpp-16")
 set(source_files
         cpp_parsing/CPP14Lexer.cpp
-        src/isort.cpp)
+        src/isort.cpp
+        include/black.hpp)
 
 find_package(antlr4-runtime CONFIG REQUIRED)
 find_package(cppclick CONFIG REQUIRED)
